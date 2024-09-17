@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Interactive Quiz App</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background-color: #f0f8ff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .quiz-container {
+      background-color: #ffffff;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    h1 {
+      color: #5a67d8;
+    }
+
+    .quiz-box {
+      margin: 20px 0;
+      padding: 20px;
+      background-color: #e2e8f0;
+      border-radius: 10px;
+    }
+
+    .question {
+      font-size: 20px;
+      margin-bottom: 15px;
+      color: #333;
+    }
+
+    .options {
+      list-style-type: none;
+      padding: 0;
+    }
+
+    .options li {
+      margin: 10px 0;
+      padding: 10px;
+      background-color: #f7fafc;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    .options li:hover {
+      background-color: #c3dafe;
+    }
+
+    .correct {
+      background-color: #68d391 !important;
+      color: white;
+    }
+
+    .incorrect {
+      background-color: #f56565 !important;
+      color: white;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .btn {
+      margin-top: 20px;
+      padding: 10px 20px;
+      background-color: #48bb78;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    .btn:hover {
+      background-color: #38a169;
+    }
+
+    #score {
+      font-size: 24px;
+      color: #4a5568;
+    }
+  </style>
+</head>
+<body>
+  <div class="quiz-container">
+    <h1>Interactive Quiz</h1>
+    <div id="quiz" class="quiz-box"></div>
+    <button id="next-btn" class="btn">Next Question</button>
+    <div id="score" class="hidden"></div>
+  </div>
+
+  <script>
+    // Quiz Questions
+    const questions = [
+      {
+        question: "What does HTML stand for?",
+        options: ["Hyper Text Markup Language", "Home Tool Markup Language", "Hyperlinks and Text Markup Language", "Hyper Text Machine Language"],
+        correctAnswer: "Hyper Text Markup Language"
+      },
+      {
+        question: "Which JavaScript framework is maintained by Facebook?",
+        options: ["Angular", "React", "Vue", "Ember"],
+        correctAnswer: "React"
+      },
+      {
+        question: "Which programming language is primarily used for Android app development?",
+        options: ["Swift", "Java", "Kotlin", "Python"],
+        correctAnswer: "Kotlin"
+      },
+      {
+        question: "What is the main purpose of CSS?",
+        options: ["Structure content", "Add interactivity", "Style a web page", "None of the above"],
+        correctAnswer: "Style a web page"
+      },
+      {
+        question: "Which of the following is not a programming language?",
+        options: ["Python", "JavaScript", "HTML", "Java"],
+        correctAnswer: "HTML"
+      }
+    ];
+
+    // DOM elements
+    const quizContainer = document.getElementById('quiz');
+    const nextBtn = document.getElementById('next-btn');
+    const scoreDisplay = document.getElementById('score');
+
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let selectedAnswer = null;
+
+    // Function to load a question
+    const loadQuestion = () => {
+      const currentQuestion = questions[currentQuestionIndex];
+      quizContainer.innerHTML = `
+        <div class="question">${currentQuestion.question}</div>
+        <ul class="options">
+          ${currentQuestion.options.map((option, index) => `
+            <li id="option${index}" onclick="selectAnswer(${index}, '${option}')">${option}</li>
+          `).join('')}
+        </ul>
+      `;
+    };
+
+    // Select an answer
+    function selectAnswer(index, answer) {
+      selectedAnswer = answer;
+
+      // Remove previous highlights
+      document.querySelectorAll('.options li').forEach(li => li.classList.remove('correct', 'incorrect'));
+
+      const selectedOption = document.getElementById(`option${index}`);
+
+      // Highlight the selection based on correctness
+      if (selectedAnswer === questions[currentQuestionIndex].correctAnswer) {
+        selectedOption.classList.add('correct');
+      } else {
+        selectedOption.classList.add('incorrect');
+      }
+    }
+
+    // Check the answer and load the next question
+    const checkAnswer = () => {
+      if (!selectedAnswer) {
+        alert('Please select an answer!');
+        return;
+      }
+
+      // Update score if correct
+      if (selectedAnswer === questions[currentQuestionIndex].correctAnswer) {
+        score++;
+      }
+
+      currentQuestionIndex++;
+      selectedAnswer = null;
+
+      if (currentQuestionIndex < questions.length) {
+        loadQuestion();
+      } else {
+        showScore();
+      }
+    };
+
+    // Show the score at the end
+    const showScore = () => {
+      quizContainer.classList.add('hidden');
+      nextBtn.classList.add('hidden');
+      scoreDisplay.classList.remove('hidden');
+      scoreDisplay.innerHTML = `You scored ${score} out of ${questions.length}`;
+    };
+
+    // Event listener for the "Next" button
+    nextBtn.addEventListener('click', checkAnswer);
+
+    // Load the first question on page load
+    loadQuestion();
+  </script>
+</body>
+</html>
